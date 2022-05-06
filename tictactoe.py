@@ -6,27 +6,40 @@ Author: Antonio Saucedo
 from colorama import Fore
 from colorama import Style
 
+def alphacheck(move, limit):
+    while move.isalpha():
+        print()
+        print("Invalid Entry!")
+        move = input(f"choose a square (1-{limit}): ")
+    while len(move) < 1:
+        print()
+        print("Invalid Entry!")
+        move = input(f"choose a square (1-{limit}): ")
+    return move
+
 def main():
+    selected = []
     player_turn = "o"
-    size = int(input("What board size would you like? 3 or 4? "))
+    size = input("What board size would you like? 3 or 4? ")
     print()
 
-    while (size != 3) & (size != 4):
+    while (size != "3") & (size != "4"):
         print("Invalid Size!")
         size = input("What board size would you like? 3 or 4? ")
         print()
 
-    board = board_values(size)
+    size_int = int(size)
+    board = board_values(size_int)
 
     winner = "draw"
-    while (not end(board, size)) & (winner != "x") & (winner != "o"):
-        display_board(board, size)
+    while (not end(board, size_int)) & (winner != "x") & (winner != "o"):
+        display_board(board, size_int)
         player_turn = player(player_turn)
-        turn(player_turn, board, size)
-        winner = win(board, size)
+        turn(player_turn, board, size_int, selected)
+        winner = win(board, size_int)
         print()
 
-    display_board(board, size)
+    display_board(board, size_int)
     print()
 
     if winner != "draw":
@@ -72,21 +85,26 @@ def player(player_turn):
     else:
         return "o"
 
-def turn(player_turn, board, size):
+def turn(player_turn, board, size, selected):
     print()
     if size == 3:
-        move = int(input(f"{player_turn}'s turn to choose a square (1-9): "))
-        while (move < 1) | (move > 9):
+        move = input(f"{player_turn}'s turn to choose a square (1-9): ")
+        move = alphacheck(move, 9)
+        while (int(move) < 1) | (int(move) > 9) | (int(move) in selected):
             print()
             print("Invalid Entry!")
-            move = int(input(f"{player_turn}'s turn to choose a square (1-9): "))
+            move = input(f"{player_turn}'s turn to choose a square (1-9): ")
+            move = alphacheck(move, 9)
     else:
-        move = int(input(f"{player_turn}'s turn to choose a square (1-16): "))
-        while (move < 1) | (move > 16):
+        move = input(f"{player_turn}'s turn to choose a square (1-16): ")
+        move = alphacheck(move, 16)
+        while (int(move) < 1) | (int(move) > 16) | (int(move) in selected):
             print()
             print("Invalid Entry!")
-            move = int(input(f"{player_turn}'s turn to choose a square (1-16): "))
-    board[move - 1] = player_turn
+            move = input(f"{player_turn}'s turn to choose a square (1-16): ")
+            move = alphacheck(move, 16)
+    selected.append(int(move))
+    board[int(move) - 1] = player_turn
 
 def win(board, size):
     if size == 3:
@@ -134,6 +152,7 @@ while continue_playing:
     play_again = input("Would you like to play again? ")
 
     while (play_again.lower() != 'y') & (play_again.lower() != 'yes') & (play_again.lower() != 'n') & (play_again.lower() != 'no'):
+        print()
         print("Invalid Input!")
         play_again = input("Would you like to play again? ")
 
